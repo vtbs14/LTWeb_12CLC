@@ -213,6 +213,7 @@ public class UserDaoImpl extends DBConnectMySQL implements IUserDAO {
 		}
 
 		scanner.close();
+		
 		List<UserModel> list = userDao.findAll();
 		for (UserModel user : list) {
 			System.out.println(user);
