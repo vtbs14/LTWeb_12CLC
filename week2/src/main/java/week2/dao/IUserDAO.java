@@ -9,6 +9,8 @@ public interface IUserDAO {
 	
 	UserModel findById(int id);
 	
+	UserModel findbyUsername(String username);
+	
 	void insert(UserModel user);
 	
 	void register(UserModel user);

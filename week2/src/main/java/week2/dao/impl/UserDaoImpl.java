@@ -8,10 +8,11 @@ import java.util.List;
 import java.util.Scanner;
 
 import week2.configs.DBConnectMySQL;
+import week2.configs.DBConnectSQL;
 import week2.dao.IUserDAO;
 import week2.model.UserModel;
 
-public class UserDaoImpl extends DBConnectMySQL implements IUserDAO {
+public class UserDaoImpl extends DBConnectSQL implements IUserDAO {
 
 	public Connection conn = null;
 	public PreparedStatement ps = null;
@@ -22,13 +23,13 @@ public class UserDaoImpl extends DBConnectMySQL implements IUserDAO {
 		String sql = "select * from users";
 		List<UserModel> list = new ArrayList<>();
 		try {
-			conn = super.getDatabaseConnection();
+			conn = super.getConnectionW();
 			ps = conn.prepareStatement(sql);
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
 				list.add(new UserModel(rs.getInt("id"), rs.getString("username"), rs.getString("password"),
-						rs.getString("fullname"), rs.getString("email"), rs.getString("images")));
+						rs.getString("fullname"), rs.getString("email"), rs.getString("images"), rs.getString("phone"), rs.getInt("roleid"), rs.getDate("createDate")));
 			}
 			return list;
 
@@ -41,12 +42,54 @@ public class UserDaoImpl extends DBConnectMySQL implements IUserDAO {
 	}
 
 	@Override
+	public UserModel findbyUsername(String username) {
+		String sql = "SELECT * FROM users WHERE username = ?";
+		UserModel user = null;
+
+		try {
+			conn = super.getConnectionW();
+			ps = conn.prepareStatement(sql);
+			ps.setString(1, username);
+			rs = ps.executeQuery();
+
+			if (rs.next()) {
+				user = new UserModel();
+				user.setId(rs.getInt("id"));
+				user.setUsername(rs.getString("username"));
+				user.setPassword(rs.getString("password"));
+				user.setFullname(rs.getString("fullname"));
+				user.setEmail(rs.getString("email"));
+				user.setImages(rs.getString("images"));
+				user.setPhone(rs.getString("phone"));
+				user.setRoleid(rs.getInt("roleid"));
+				user.setCreateDate(rs.getDate("createDate"));
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			// Close resources (ResultSet, PreparedStatement, Connection) in a finally block
+			try {
+				if (rs != null)
+					rs.close();
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return user; // Return the populated user model or null if not found
+	}
+
+	@Override
 	public UserModel findById(int id) {
 		String sql = "SELECT * FROM users WHERE id = ?";
 		UserModel user = null;
 
 		try {
-			conn = super.getDatabaseConnection();
+			conn = super.getConnectionW();
 			ps = conn.prepareStatement(sql);
 			ps.setInt(1, id);
 			rs = ps.executeQuery();
@@ -58,8 +101,10 @@ public class UserDaoImpl extends DBConnectMySQL implements IUserDAO {
 				user.setPassword(rs.getString("password"));
 				user.setFullname(rs.getString("fullname"));
 				user.setEmail(rs.getString("email"));
-				user.setImages("images");
-
+				user.setImages(rs.getString("images"));
+				user.setPhone(rs.getString("phone"));
+				user.setRoleid(rs.getInt("roleid"));
+				user.setCreateDate(rs.getDate("createDate"));
 			}
 
 		} catch (Exception e) {
@@ -82,9 +127,9 @@ public class UserDaoImpl extends DBConnectMySQL implements IUserDAO {
 
 	@Override
 	public void insert(UserModel user) {
-		String sql = "insert into users(id, username, password, fullname, email, images) values (?, ?, ?, ?, ?, ?)";
+		String sql = "insert into users(id, username, password, fullname, email, images, phone, roleid, createDate) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		try {
-			conn = super.getDatabaseConnection();
+			conn = super.getConnectionW();
 			ps = conn.prepareStatement(sql);
 
 			ps.setInt(1, user.getId());
@@ -106,7 +151,7 @@ public class UserDaoImpl extends DBConnectMySQL implements IUserDAO {
 	public void register(UserModel user) {
 		String sql = "insert into users (username, password, fullname, email, images) values (?,?,?,?,?)";
 		try {
-			conn = super.getDatabaseConnection();
+			conn = super.getConnectionW();
 			ps = conn.prepareStatement(sql);
 
 			ps.setString(1, user.getUsername());
@@ -131,7 +176,7 @@ public class UserDaoImpl extends DBConnectMySQL implements IUserDAO {
 		String sql = "select * from users where username = ? and password = ?";
 		UserModel user = null;
 		try {
-			conn = super.getDatabaseConnection();
+			conn = super.getConnectionW();
 			ps = conn.prepareStatement(sql);
 			ps.setString(1, username);
 			ps.setString(2, password);
