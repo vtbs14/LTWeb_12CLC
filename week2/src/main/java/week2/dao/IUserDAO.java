@@ -12,8 +12,4 @@ public interface IUserDAO {
 	UserModel findbyUsername(String username);
 	
 	void insert(UserModel user);
-	
-	void register(UserModel user);
-	
-	UserModel login(String username, String password);
 }

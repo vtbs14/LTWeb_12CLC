@@ -16,26 +16,12 @@ public class DBConnectSQL {
 
 	// Kết nối SQL Server với Windows Authentication
 	public Connection getConnectionW() throws Exception {
-		Connection conn = null;
-		try {
 			String url = "jdbc:sqlserver://" + serverName + ":" + portNumber + "\\" + instance + ";databaseName=" + dbName;
 
 			if (instance == null || instance.trim().isEmpty())
 				url = "jdbc:sqlserver://" + serverName + ":" + portNumber + ";databaseName="+ dbName;
-			conn = DriverManager.getConnection(url, userID, password);
-			if (conn != null) {
-				DatabaseMetaData dm = (DatabaseMetaData) conn.getMetaData();
-				System.out.println("Drive name: " + dm.getDriverName());
-				System.out.println("Drive version: " + dm.getDriverVersion());
-				System.out.println("Product name: " + dm.getDatabaseProductName());
-				System.out.println("Product version: " + dm.getDatabaseProductVersion());
-
-				return conn;
-			}
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-		}
-		return null;
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+			return DriverManager.getConnection(url, userID, password);
 	}
 
 	public static void main(String[] args) {

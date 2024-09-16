@@ -149,6 +149,15 @@ public class UserModel implements Serializable {
 
 
 
+	@Override
+	public String toString() {
+		return "UserModel [id=" + id + ", username=" + username + ", password=" + password + ", fullname=" + fullname
+				+ ", email=" + email + ", images=" + images + ", phone=" + phone + ", roleid=" + roleid
+				+ ", createDate=" + createDate + "]";
+	}
+
+
+
 	
 
 }
