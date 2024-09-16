@@ -102,29 +102,91 @@ public class UserDaoImpl implements IUserDAO {
 
 	@Override
 	public void insert(UserModel user) {
-		String sql = "insert into users(id, username, password, fullname, email, images, phone, roleid, createDate) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String sql = "insert into users(username, password, fullname, email, phone) values (?, ?, ?, ?, ?)";
 		try {
 			conn = new DBConnectSQL().getConnectionW();
 			ps = conn.prepareStatement(sql);
 
-			ps.setInt(1, user.getId());
-			ps.setString(2, user.getUsername());
-			ps.setString(3, user.getPassword());
-			ps.setString(4, user.getFullname());
-			ps.setString(5, user.getEmail());
-			ps.setString(6, user.getImages());
+			ps.setString(1, user.getUsername());
+			ps.setString(2, user.getPassword());
+			ps.setString(3, user.getFullname());
+			ps.setString(4, user.getEmail());
+			ps.setString(5, user.getPhone());
 
-			ps.executeUpdate();
+			int rowsAffected = ps.executeUpdate();
+			if (rowsAffected > 0) {
+			    System.out.println("Insert successful.");
+			} else {
+			    System.out.println("Insert failed.");
+			}
+
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
+	
+	
+	@Override
+	public boolean checkExistUsername(String username) {
+		boolean duplicate = false;
+		String query = "select * from [users] where username = ?";
+		try {
+		conn = new DBConnectSQL().getConnectionW();
+		ps = conn.prepareStatement(query);
+		ps.setString(1, username);
+		rs = ps.executeQuery();
+		if (rs.next()) {
+		duplicate = true;
+		}
+		ps.close();
+		conn.close();
+		} catch (Exception ex) {}
+		return duplicate;
+	}
 
+
+	@Override
+	public boolean checkExistEmail(String email) {
+		boolean duplicate = false;
+		String query = "select * from [users] where email = ?";
+		try {
+		conn = new DBConnectSQL().getConnectionW();
+		ps = conn.prepareStatement(query);
+		ps.setString(1, email);
+		rs = ps.executeQuery();
+		if (rs.next()) {
+		duplicate = true;
+		}
+		ps.close();
+		conn.close();
+		} catch (Exception ex) {}
+		return duplicate;
+	}
+
+	@Override
+	public boolean checkExistPhone(String phone) {
+		boolean duplicate = false;
+		String query = "select * from [user] where email = ?";
+		try {
+		conn = new DBConnectSQL().getConnectionW();
+		ps = conn.prepareStatement(query);
+		ps.setString(1, phone);
+		rs = ps.executeQuery();
+		if (rs.next()) {
+		duplicate = true;
+		}
+		ps.close();
+		conn.close();
+		} catch (Exception ex) {}
+		return duplicate;
+	}
 
 	public static void main(String[] args) {
-		try {
+		//UserDaoImpl userDao = new UserDaoImpl();
+		//userDao.insert(new UserModel(8 , "hanni1", "abc", "hanni pham", "thaomepp@gmail.com", "", "0123456789", 1, null));
+		/*try {
 			IUserDAO userDao = new UserDaoImpl();
 			List<UserModel> users = userDao.findAll();
 			
@@ -134,6 +196,8 @@ public class UserDaoImpl implements IUserDAO {
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
+
+	
 }

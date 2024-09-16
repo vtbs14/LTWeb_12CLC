@@ -22,4 +22,43 @@ public class UserServiceImpl implements IUserService {
 	public UserModel FindByUserNam(String username) {
 		return userDao.findbyUsername(username);
 	}
+
+	@Override
+	public boolean register(String username, String password, String fullname, String email, String phone) {
+	    if (userDao.checkExistUsername(username)) {
+	        return false;
+	    }
+
+	    long millis = System.currentTimeMillis();
+	    java.sql.Date date = new java.sql.Date(millis);
+
+	    // Khởi tạo đối tượng UserModel và gán giá trị
+	    UserModel user = new UserModel();
+	    user.setUsername(username);
+	    user.setPassword(password);
+	    user.setFullname(fullname);
+	    user.setEmail(email);
+	    user.setPhone(phone);
+	    user.setCreateDate(date); // Nếu bạn có cột createDate trong cơ sở dữ liệu
+
+	    userDao.insert(user);
+	    return true;
+	}
+
+
+	@Override
+	public boolean checkExistUsername(String username) {
+		return userDao.checkExistUsername(username);
+	}
+
+	@Override
+	public boolean checkExistEmail(String email) {
+		return userDao.checkExistEmail(email);
+	}
+
+	@Override
+	public boolean checkExistPhone(String phone) {
+		return userDao.checkExistPhone(phone);
+	}
+	
 }
